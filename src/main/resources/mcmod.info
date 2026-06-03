@@ -1,0 +1,16 @@
+[
+{
+  "modid": "byteoverlay",
+  "name": "Byte Overlay",
+  "description": "Overlay de estatísticas para o servidor Mush.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Gemini CLI"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
