@@ -1,0 +1,32 @@
+# Gradle
+.gradle/
+build/
+
+# Builds customizadas
+build/libs/
+
+# IDEs
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# Logs
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Java
+*.class
+
+# Arquivos temporários
+tmp/
+temp/
