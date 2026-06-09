@@ -27,6 +27,7 @@ public class ByteConfig {
     public static boolean ntShowFKDR = true;
     public static boolean ntShowWS = true;
     public static boolean ntShowLevel = true;
+    public static boolean ntShowHealthBar = true;
 
     public static int backgroundAlpha = 150; // 0-255
     public static int headerColorIndex = 11; // Aqua
@@ -63,6 +64,7 @@ public class ByteConfig {
                 ntShowFKDR = data.ntShowFKDR;
                 ntShowWS = data.ntShowWS;
                 ntShowLevel = data.ntShowLevel;
+                ntShowHealthBar = data.ntShowHealthBar;
                 backgroundAlpha = data.backgroundAlpha;
                 headerColorIndex = data.headerColorIndex;
                 nickedSoundIndex = data.nickedSoundIndex;
@@ -93,6 +95,7 @@ public class ByteConfig {
             data.ntShowFKDR = ntShowFKDR;
             data.ntShowWS = ntShowWS;
             data.ntShowLevel = ntShowLevel;
+            data.ntShowHealthBar = ntShowHealthBar;
             data.backgroundAlpha = backgroundAlpha;
             data.headerColorIndex = headerColorIndex;
             data.nickedSoundIndex = nickedSoundIndex;
@@ -121,6 +124,7 @@ public class ByteConfig {
         boolean ntShowFKDR = true;
         boolean ntShowWS = true;
         boolean ntShowLevel = true;
+        boolean ntShowHealthBar = true;
         int backgroundAlpha = 150;
         int headerColorIndex = 11;
         int nickedSoundIndex = 0;

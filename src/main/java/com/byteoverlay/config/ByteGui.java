@@ -36,6 +36,8 @@ public class ByteGui extends GuiScreen {
         y += 22;
         this.buttonList.add(new GuiButton(13, centerX - 105, y, 100, 20, "NT WS: " + (ByteConfig.ntShowWS ? "§aON" : "§cOFF")));
         this.buttonList.add(new GuiButton(14, centerX + 5, y, 100, 20, "NT Level: " + (ByteConfig.ntShowLevel ? "§aON" : "§cOFF")));
+        y += 22;
+        this.buttonList.add(new GuiButton(18, centerX - 105, y, 210, 20, "NT HP Bar: " + (ByteConfig.ntShowHealthBar ? "§aON" : "§cOFF")));
 
         y += 30;
 
@@ -114,6 +116,9 @@ public class ByteGui extends GuiScreen {
         } else if (button.id == 14) {
             ByteConfig.ntShowLevel = !ByteConfig.ntShowLevel;
             button.displayString = "NT Level: " + (ByteConfig.ntShowLevel ? "§aON" : "§cOFF");
+        } else if (button.id == 18) {
+            ByteConfig.ntShowHealthBar = !ByteConfig.ntShowHealthBar;
+            button.displayString = "NT HP Bar: " + (ByteConfig.ntShowHealthBar ? "§aON" : "§cOFF");
         } else if (button.id == 15) {
             ByteConfig.scale += 0.1f;
             if (ByteConfig.scale > 1.55f) ByteConfig.scale = 0.1f;
@@ -175,8 +180,8 @@ public class ByteGui extends GuiScreen {
         
         this.drawCenteredString(this.fontRendererObj, "§7§nOverlay Stats", centerX, 25, 16777215);
         this.drawCenteredString(this.fontRendererObj, "§7§nNametags", centerX, 115, 16777215);
-        this.drawCenteredString(this.fontRendererObj, "§7§nVisuals & Position", centerX, 200, 16777215);
-        this.drawCenteredString(this.fontRendererObj, "§c§nSnipers", centerX, 290, 16777215);
+        this.drawCenteredString(this.fontRendererObj, "§7§nVisuals & Position", centerX, 222, 16777215);
+        this.drawCenteredString(this.fontRendererObj, "§c§nSnipers", centerX, 312, 16777215);
         
         this.sniperInput.drawTextBox();
     }

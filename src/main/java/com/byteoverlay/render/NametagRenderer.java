@@ -2,6 +2,7 @@ package com.byteoverlay.render;
 
 import com.byteoverlay.cache.CacheManager;
 import com.byteoverlay.config.ByteConfig;
+import com.byteoverlay.logic.NickFormatterFeature;
 import com.byteoverlay.logic.PlayerData;
 import com.byteoverlay.utils.MathUtils;
 import net.minecraft.client.Minecraft;
@@ -28,10 +29,14 @@ public class NametagRenderer {
     public void onRenderLiving(RenderLivingEvent.Specials.Post<EntityPlayer> event) {
         if (!ByteConfig.nametagsEnabled) return;
         if (!(event.entity instanceof EntityPlayer)) return;
-        
+
         EntityPlayer player = (EntityPlayer) event.entity;
-        if (player == mc.thePlayer) return; // Don't render on self
-        
+        if (player == mc.thePlayer) return;
+
+        if (ByteConfig.ntShowHealthBar) {
+            renderHealthBarVertical(player, event.x, event.y, event.z);
+        }
+
         PlayerData data = cacheManager.get(player.getName());
         if (data == null || data.isFetching()) return;
 
@@ -46,15 +51,15 @@ public class NametagRenderer {
             text = "§5§lSTAFF";
         } else {
             StringBuilder sb = new StringBuilder();
-            
+
             if (ByteConfig.ntShowLevel) {
-                sb.append(data.getLevelBadge() != null ? data.getLevelBadge() : "§a" + data.getLevel()).append(" ");
+                sb.append(NickFormatterFeature.getLevelPart(data));
             }
-            
+
             if (ByteConfig.ntShowFKDR) {
                 sb.append("§fFKDR: ").append(getFkdrColor(data.getFkdr())).append(MathUtils.format(data.getFkdr())).append(" ");
             }
-            
+
             if (ByteConfig.ntShowWS) {
                 sb.append("§fWS: ").append(getWsColor(data.getWinstreak())).append(data.getWinstreak()).append(" ");
             }
@@ -69,10 +74,9 @@ public class NametagRenderer {
         float f = 1.6F;
         float f1 = 0.016666668F * f;
         GlStateManager.pushMatrix();
-        
-        // Increased height offset to avoid overlapping with health and nick
+
         double heightOffset = player.isSneaking() ? 0.7D : 1.1D;
-        
+
         GlStateManager.translate((float) x, (float) y + player.height + heightOffset, (float) z);
         GL11.glNormal3f(0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
@@ -85,7 +89,7 @@ public class NametagRenderer {
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        
+
         int i = fontRenderer.getStringWidth(text) / 2;
         GlStateManager.disableTexture2D();
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
@@ -95,12 +99,63 @@ public class NametagRenderer {
         worldrenderer.pos((double) (i + 1), -1.0D, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
         tessellator.draw();
         GlStateManager.enableTexture2D();
-        
+
         fontRenderer.drawString(text, -fontRenderer.getStringWidth(text) / 2, 0, 553648127);
         GlStateManager.enableDepth();
         GlStateManager.depthMask(true);
         fontRenderer.drawString(text, -fontRenderer.getStringWidth(text) / 2, 0, -1);
         GlStateManager.enableLighting();
+        GlStateManager.disableBlend();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.popMatrix();
+    }
+
+    private void renderHealthBarVertical(EntityPlayer player, double x, double y, double z) {
+        float health = player.getHealth();
+        float maxHealth = player.getMaxHealth();
+        float percent = maxHealth > 0.0f ? Math.min(1.0f, Math.max(0.0f, health / maxHealth)) : 0.0f;
+
+        float barWidth = 0.06f;
+        float fullHeight = 1.8f;
+        float fillHeight = fullHeight * percent;
+        float sideOffset = 0.4f;
+
+        float r = Math.min(1.0f, 2.0f * (1.0f - percent));
+        float g = Math.min(1.0f, 2.0f * percent);
+        float b = 0.0f;
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) x, (float) y, (float) z);
+
+        RenderManager renderManager = mc.getRenderManager();
+        GlStateManager.rotate(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+        GlStateManager.translate(sideOffset, 0.0f, 0.0f);
+
+        GlStateManager.disableTexture2D();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+
+        float hw = barWidth / 2.0f;
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer wr = tessellator.getWorldRenderer();
+
+        wr.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        wr.pos(-hw - 0.01f, -0.01f, 0.0f).color(0.0f, 0.0f, 0.0f, 0.5f).endVertex();
+        wr.pos(-hw - 0.01f, fullHeight + 0.01f, 0.0f).color(0.0f, 0.0f, 0.0f, 0.5f).endVertex();
+        wr.pos(hw + 0.01f, fullHeight + 0.01f, 0.0f).color(0.0f, 0.0f, 0.0f, 0.5f).endVertex();
+        wr.pos(hw + 0.01f, -0.01f, 0.0f).color(0.0f, 0.0f, 0.0f, 0.5f).endVertex();
+        tessellator.draw();
+
+        if (fillHeight > 0.0f) {
+            wr.begin(7, DefaultVertexFormats.POSITION_COLOR);
+            wr.pos(-hw, 0.0f, 0.0f).color(r, g, b, 1.0f).endVertex();
+            wr.pos(-hw, fillHeight, 0.0f).color(r, g, b, 1.0f).endVertex();
+            wr.pos(hw, fillHeight, 0.0f).color(r, g, b, 1.0f).endVertex();
+            wr.pos(hw, 0.0f, 0.0f).color(r, g, b, 1.0f).endVertex();
+            tessellator.draw();
+        }
+
+        GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.popMatrix();

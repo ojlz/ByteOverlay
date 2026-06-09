@@ -108,19 +108,19 @@ public class OverlayRenderer {
         int count = lastPlayers.size();
         
         // --- ALIGNMENT LOGIC ---
-        // Column Levels: 0 (Level), 35 (Name), NameWidth (Stats)
-        int levelColWidth = 35; 
-        
+        int maxLevelWidth = 0;
         int maxNameOnlyWidth = 100;
         for (PlayerData p : lastPlayers) {
             String fullNick = NickFormatterFeature.formatNick(p);
             String levelPart = NickFormatterFeature.getLevelPart(p);
             String nameOnlyPart = fullNick.substring(levelPart.length());
-            int w = fr.getStringWidth(nameOnlyPart);
-            if (w > maxNameOnlyWidth) maxNameOnlyWidth = w;
+            int lw = fr.getStringWidth(levelPart);
+            int nw = fr.getStringWidth(nameOnlyPart);
+            if (lw > maxLevelWidth) maxLevelWidth = lw;
+            if (nw > maxNameOnlyWidth) maxNameOnlyWidth = nw;
         }
         
-        int nameColTotalWidth = levelColWidth + maxNameOnlyWidth + 10;
+        int nameColTotalWidth = maxLevelWidth + maxNameOnlyWidth + 10;
 
         int width = nameColTotalWidth;
         if (ByteConfig.showFKDR) width += 45;
@@ -160,8 +160,8 @@ public class OverlayRenderer {
             // Draw Level (Aligned at start)
             fr.drawStringWithShadow(levelPart, x, currY, -1);
             
-            // Draw Name (Aligned at fixed offset 35)
-            fr.drawStringWithShadow(nameOnlyPart, x + levelColWidth, currY, -1);
+            // Draw Name (Aligned after max level width)
+            fr.drawStringWithShadow(nameOnlyPart, x + maxLevelWidth, currY, -1);
             
             currX = x + nameColTotalWidth;
 
