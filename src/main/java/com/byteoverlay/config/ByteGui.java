@@ -26,6 +26,9 @@ public class ByteGui extends GuiScreen {
         y += 22;
         this.buttonList.add(new GuiButton(16, centerX - 105, y, 100, 20, "Wins: " + (ByteConfig.showWins ? "§aON" : "§cOFF")));
         this.buttonList.add(new GuiButton(17, centerX + 5, y, 100, 20, "Losses: " + (ByteConfig.showLosses ? "§aON" : "§cOFF")));
+        y += 22;
+        this.buttonList.add(new GuiButton(19, centerX - 105, y, 100, 20, "FPS: " + (ByteConfig.showFps ? "§aON" : "§cOFF")));
+        this.buttonList.add(new GuiButton(20, centerX + 5, y, 100, 20, "Ping: " + (ByteConfig.showPing ? "§aON" : "§cOFF")));
         
         y += 30;
         
@@ -129,6 +132,12 @@ public class ByteGui extends GuiScreen {
         } else if (button.id == 17) {
             ByteConfig.showLosses = !ByteConfig.showLosses;
             button.displayString = "Losses: " + (ByteConfig.showLosses ? "§aON" : "§cOFF");
+        } else if (button.id == 19) {
+            ByteConfig.showFps = !ByteConfig.showFps;
+            button.displayString = "FPS: " + (ByteConfig.showFps ? "§aON" : "§cOFF");
+        } else if (button.id == 20) {
+            ByteConfig.showPing = !ByteConfig.showPing;
+            button.displayString = "Ping: " + (ByteConfig.showPing ? "§aON" : "§cOFF");
         } else if (button.id == 101) {
             addSniper();
         } else if (button.id >= 2000) {
@@ -179,9 +188,9 @@ public class ByteGui extends GuiScreen {
         this.drawCenteredString(this.fontRendererObj, "§b§lByte Overlay - Configurações", centerX, 5, 16777215);
         
         this.drawCenteredString(this.fontRendererObj, "§7§nOverlay Stats", centerX, 25, 16777215);
-        this.drawCenteredString(this.fontRendererObj, "§7§nNametags", centerX, 115, 16777215);
-        this.drawCenteredString(this.fontRendererObj, "§7§nVisuals & Position", centerX, 222, 16777215);
-        this.drawCenteredString(this.fontRendererObj, "§c§nSnipers", centerX, 312, 16777215);
+        this.drawCenteredString(this.fontRendererObj, "§7§nNametags", centerX, 137, 16777215);
+        this.drawCenteredString(this.fontRendererObj, "§7§nVisuals & Position", centerX, 244, 16777215);
+        this.drawCenteredString(this.fontRendererObj, "§c§nSnipers", centerX, 334, 16777215);
         
         this.sniperInput.drawTextBox();
     }

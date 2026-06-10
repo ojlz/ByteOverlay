@@ -22,6 +22,8 @@ public class ByteConfig {
     public static boolean showLosses = true;
     public static boolean showLevel = true;
     public static boolean showClan = true;
+    public static boolean showFps = true;
+    public static boolean showPing = true;
 
     public static boolean nametagsEnabled = true;
     public static boolean ntShowFKDR = true;
@@ -60,6 +62,8 @@ public class ByteConfig {
                 showLosses = data.showLosses;
                 showLevel = data.showLevel;
                 showClan = data.showClan;
+                showFps = data.showFps;
+                showPing = data.showPing;
                 nametagsEnabled = data.nametagsEnabled;
                 ntShowFKDR = data.ntShowFKDR;
                 ntShowWS = data.ntShowWS;
@@ -91,6 +95,8 @@ public class ByteConfig {
             data.showLosses = showLosses;
             data.showLevel = showLevel;
             data.showClan = showClan;
+            data.showFps = showFps;
+            data.showPing = showPing;
             data.nametagsEnabled = nametagsEnabled;
             data.ntShowFKDR = ntShowFKDR;
             data.ntShowWS = ntShowWS;
@@ -120,6 +126,8 @@ public class ByteConfig {
         boolean showLosses = true;
         boolean showLevel = true;
         boolean showClan = true;
+        boolean showFps = true;
+        boolean showPing = true;
         boolean nametagsEnabled = true;
         boolean ntShowFKDR = true;
         boolean ntShowWS = true;

@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class MainMod {
     public static final String MODID = "byteoverlay";
     public static final String NAME = "Byte Overlay";
-    public static final String VERSION = "2.1.3";
+    public static final String VERSION = "2.1.4";
     
     public static MainMod instance;
 

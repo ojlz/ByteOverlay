@@ -185,11 +185,37 @@ public class OverlayRenderer {
             currY += 10;
         }
 
-        if (lastMyData != null && !lastMyData.isFetching()) {
+        boolean hasAnyStat = (lastMyData != null && !lastMyData.isFetching() && (ByteConfig.showFKDR || ByteConfig.showWR))
+                          || ByteConfig.showFps || ByteConfig.showPing;
+        if (hasAnyStat) {
             currY += 5;
             StringBuilder personal = new StringBuilder("§bSeu ");
-            if (ByteConfig.showFKDR) personal.append("FKDR: ").append(getFkdrColor(lastMyData.getFkdr())).append(formatStat(lastMyData.getFkdr())).append(" ");
-            if (ByteConfig.showWR) personal.append("§8| §bWR: §f").append(formatStat(lastMyData.getWinRate()));
+            boolean first = true;
+            if (lastMyData != null && !lastMyData.isFetching()) {
+                if (ByteConfig.showFKDR) {
+                    personal.append("FKDR: ").append(getFkdrColor(lastMyData.getFkdr())).append(formatStat(lastMyData.getFkdr()));
+                    first = false;
+                }
+                if (ByteConfig.showWR) {
+                    if (!first) personal.append(" §8|");
+                    personal.append(" §bWR: §f").append(formatStat(lastMyData.getWinRate()));
+                    first = false;
+                }
+            }
+            if (ByteConfig.showFps) {
+                if (!first) personal.append(" §8|");
+                personal.append(" §bFPS: §f").append(Minecraft.getDebugFPS());
+                first = false;
+            }
+            if (ByteConfig.showPing) {
+                if (!first) personal.append(" §8|");
+                int ping = 0;
+                if (mc.getNetHandler() != null) {
+                    NetworkPlayerInfo info = mc.getNetHandler().getPlayerInfo(mc.thePlayer.getUniqueID());
+                    if (info != null) ping = info.getResponseTime();
+                }
+                personal.append(" §bPing: §f").append(ping).append("ms");
+            }
             fr.drawStringWithShadow(personal.toString().trim(), x, currY, -1);
         }
         ScaleSliderFeature.endScale();
