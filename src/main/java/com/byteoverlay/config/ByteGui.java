@@ -9,73 +9,94 @@ public class ByteGui extends GuiScreen {
     private final String[] colors = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
     private GuiTextField sniperInput;
 
+    private int cx;
+    private int y;
+
+    private void lbl(String text) {
+        drawCenteredString(fontRendererObj, text, cx, y, 0x55FFFF);
+        y += 14;
+    }
+
+    private void sep() {
+        y += 10;
+    }
+
+    private void btn(int id, String text) {
+        buttonList.add(new GuiButton(id, cx + offset, y, 100, 20, text));
+        offset += 110;
+    }
+
+    private int offset;
+
     @Override
     public void initGui() {
-        int centerX = this.width / 2;
-        int y = 30;
+        cx = width / 2;
+        y = 25;
 
-        this.buttonList.clear();
+        buttonList.clear();
 
-        // --- SECTION: OVERLAY STATS ---
-        y += 15;
-        this.buttonList.add(new GuiButton(1, centerX - 105, y, 100, 20, "Overlay: " + (ByteConfig.enabled ? "§aON" : "§cOFF")));
-        this.buttonList.add(new GuiButton(6, centerX + 5, y, 100, 20, "FKDR: " + (ByteConfig.showFKDR ? "§aON" : "§cOFF")));
-        y += 22;
-        this.buttonList.add(new GuiButton(7, centerX - 105, y, 100, 20, "WS: " + (ByteConfig.showWS ? "§aON" : "§cOFF")));
-        this.buttonList.add(new GuiButton(8, centerX + 5, y, 100, 20, "WR: " + (ByteConfig.showWR ? "§aON" : "§cOFF")));
-        y += 22;
-        this.buttonList.add(new GuiButton(16, centerX - 105, y, 100, 20, "Wins: " + (ByteConfig.showWins ? "§aON" : "§cOFF")));
-        this.buttonList.add(new GuiButton(17, centerX + 5, y, 100, 20, "Losses: " + (ByteConfig.showLosses ? "§aON" : "§cOFF")));
-        y += 22;
-        this.buttonList.add(new GuiButton(19, centerX - 105, y, 100, 20, "FPS: " + (ByteConfig.showFps ? "§aON" : "§cOFF")));
-        this.buttonList.add(new GuiButton(20, centerX + 5, y, 100, 20, "Ping: " + (ByteConfig.showPing ? "§aON" : "§cOFF")));
-        
-        y += 30;
-        
-        // --- SECTION: NAMETAGS ---
-        y += 15;
-        this.buttonList.add(new GuiButton(11, centerX - 105, y, 100, 20, "Nametags: " + (ByteConfig.nametagsEnabled ? "§aON" : "§cOFF")));
-        this.buttonList.add(new GuiButton(12, centerX + 5, y, 100, 20, "NT FKDR: " + (ByteConfig.ntShowFKDR ? "§aON" : "§cOFF")));
-        y += 22;
-        this.buttonList.add(new GuiButton(13, centerX - 105, y, 100, 20, "NT WS: " + (ByteConfig.ntShowWS ? "§aON" : "§cOFF")));
-        this.buttonList.add(new GuiButton(14, centerX + 5, y, 100, 20, "NT Level: " + (ByteConfig.ntShowLevel ? "§aON" : "§cOFF")));
-        y += 22;
-        this.buttonList.add(new GuiButton(18, centerX - 105, y, 210, 20, "NT HP Bar: " + (ByteConfig.ntShowHealthBar ? "§aON" : "§cOFF")));
+        // --- OVERLAY STATS ---
+        lbl("§b§lOverlay Stats");
+        offset = -105;
+        btn(1, "Overlay: " + toggle(ByteConfig.enabled));
+        btn(6, "FKDR: " + toggle(ByteConfig.showFKDR));
+        y += 22; offset = -105;
+        btn(7, "WS: " + toggle(ByteConfig.showWS));
+        btn(8, "WR: " + toggle(ByteConfig.showWR));
+        y += 22; offset = -105;
+        btn(16, "Wins: " + toggle(ByteConfig.showWins));
+        btn(17, "Losses: " + toggle(ByteConfig.showLosses));
+        y += 22; offset = -105;
+        btn(19, "FPS: " + toggle(ByteConfig.showFps));
+        btn(20, "Ping: " + toggle(ByteConfig.showPing));
+        sep();
 
-        y += 30;
-
-        // --- SECTION: VISUALS & POSITION ---
-        y += 15;
-        this.buttonList.add(new GuiButton(2, centerX - 105, y, 210, 20, "Transparência: " + (ByteConfig.backgroundAlpha * 100 / 255) + "%"));
+        // --- NAMETAGS ---
+        lbl("§b§lNametags");
+        offset = -105;
+        btn(11, "Nametags: " + toggle(ByteConfig.nametagsEnabled));
+        btn(12, "NT FKDR: " + toggle(ByteConfig.ntShowFKDR));
+        y += 22; offset = -105;
+        btn(13, "NT WS: " + toggle(ByteConfig.ntShowWS));
+        btn(14, "NT Level: " + toggle(ByteConfig.ntShowLevel));
         y += 22;
-        this.buttonList.add(new GuiButton(3, centerX - 105, y, 100, 20, "Cor Hdr: §" + colors[ByteConfig.headerColorIndex] + "Ex"));
-        this.buttonList.add(new GuiButton(15, centerX + 5, y, 100, 20, "Escala: " + (int)(ByteConfig.scale * 100) + "%"));
-        y += 22;
-        this.buttonList.add(new GuiButton(4, centerX - 105, y, 100, 20, "X: " + ByteConfig.posX));
-        this.buttonList.add(new GuiButton(5, centerX + 5, y, 100, 20, "Y: " + ByteConfig.posY));
+        buttonList.add(new GuiButton(18, cx - 105, y, 210, 20, "NT HP Bar: " + toggle(ByteConfig.ntShowHealthBar)));
+        sep();
 
-        y += 30;
+        // --- VISUALS & POSITION ---
+        lbl("§b§lVisuals & Position");
+        buttonList.add(new GuiButton(2, cx - 105, y, 210, 20, "Transparencia: " + (ByteConfig.backgroundAlpha * 100 / 255) + "%"));
+        y += 22; offset = -105;
+        btn(3, "Cor Hdr: §" + colors[ByteConfig.headerColorIndex] + "Ex");
+        btn(15, "Escala: " + (int)(ByteConfig.scale * 100) + "%");
+        y += 22; offset = -105;
+        btn(4, "X: " + ByteConfig.posX);
+        btn(5, "Y: " + ByteConfig.posY);
+        sep();
 
-        // --- SECTION: SNIPERS ---
-        y += 15;
-        this.sniperInput = new GuiTextField(100, this.fontRendererObj, centerX - 105, y, 180, 20);
-        this.buttonList.add(new GuiButton(101, centerX + 80, y, 25, 20, "+"));
+        // --- SNIPERS ---
+        lbl("§c§lSnipers");
+        offset = -105;
+        sniperInput = new GuiTextField(100, fontRendererObj, cx - 105, y, 180, 20);
+        buttonList.add(new GuiButton(101, cx + 80, y, 25, 20, "+"));
         y += 25;
-        
-        int sniperY = y;
+
         for (int i = 0; i < ByteConfig.snipers.size(); i++) {
             String sniper = ByteConfig.snipers.get(i);
-            int btnWidth = this.fontRendererObj.getStringWidth(sniper) + 15;
-            if (centerX - 105 + btnWidth > centerX + 105) {
-                centerX = this.width / 2; // dummy reset
+            int btnWidth = fontRendererObj.getStringWidth(sniper) + 20;
+            if (cx - 105 + btnWidth > cx + 105) {
                 y += 22;
+                offset = -105;
             }
-            // Use 2000+ IDs for removal buttons
-            this.buttonList.add(new GuiButton(2000 + i, centerX - 105, y, btnWidth, 20, "§c[x] §r" + sniper));
-            centerX += btnWidth + 5;
+            buttonList.add(new GuiButton(2000 + i, cx + offset, y, btnWidth, 20, "§c[x] §r" + sniper));
+            offset += btnWidth + 5;
         }
 
-        this.buttonList.add(new GuiButton(0, (this.width / 2) - 100, this.height - 25, "Salvar e Fechar"));
+        buttonList.add(new GuiButton(0, cx - 100, height - 28, 200, 20, "§aSalvar e Fechar"));
+    }
+
+    private String toggle(boolean val) {
+        return val ? "§aON" : "§cOFF";
     }
 
     @Override
@@ -85,10 +106,10 @@ public class ByteGui extends GuiScreen {
             mc.displayGuiScreen(null);
         } else if (button.id == 1) {
             ByteConfig.enabled = !ByteConfig.enabled;
-            button.displayString = "Overlay: " + (ByteConfig.enabled ? "§aON" : "§cOFF");
+            button.displayString = "Overlay: " + toggle(ByteConfig.enabled);
         } else if (button.id == 2) {
             ByteConfig.backgroundAlpha = (ByteConfig.backgroundAlpha + 15) % 256;
-            button.displayString = "Transparência: " + (ByteConfig.backgroundAlpha * 100 / 255) + "%";
+            button.displayString = "Transparencia: " + (ByteConfig.backgroundAlpha * 100 / 255) + "%";
         } else if (button.id == 3) {
             ByteConfig.headerColorIndex = (ByteConfig.headerColorIndex + 1) % colors.length;
             button.displayString = "Cor Hdr: §" + colors[ByteConfig.headerColorIndex] + "Ex";
@@ -100,44 +121,44 @@ public class ByteGui extends GuiScreen {
             button.displayString = "Y: " + ByteConfig.posY;
         } else if (button.id == 6) {
             ByteConfig.showFKDR = !ByteConfig.showFKDR;
-            button.displayString = "FKDR: " + (ByteConfig.showFKDR ? "§aON" : "§cOFF");
+            button.displayString = "FKDR: " + toggle(ByteConfig.showFKDR);
         } else if (button.id == 7) {
             ByteConfig.showWS = !ByteConfig.showWS;
-            button.displayString = "WS: " + (ByteConfig.showWS ? "§aON" : "§cOFF");
+            button.displayString = "WS: " + toggle(ByteConfig.showWS);
         } else if (button.id == 8) {
             ByteConfig.showWR = !ByteConfig.showWR;
-            button.displayString = "WR: " + (ByteConfig.showWR ? "§aON" : "§cOFF");
+            button.displayString = "WR: " + toggle(ByteConfig.showWR);
         } else if (button.id == 11) {
             ByteConfig.nametagsEnabled = !ByteConfig.nametagsEnabled;
-            button.displayString = "Nametags: " + (ByteConfig.nametagsEnabled ? "§aON" : "§cOFF");
+            button.displayString = "Nametags: " + toggle(ByteConfig.nametagsEnabled);
         } else if (button.id == 12) {
             ByteConfig.ntShowFKDR = !ByteConfig.ntShowFKDR;
-            button.displayString = "NT FKDR: " + (ByteConfig.ntShowFKDR ? "§aON" : "§cOFF");
+            button.displayString = "NT FKDR: " + toggle(ByteConfig.ntShowFKDR);
         } else if (button.id == 13) {
             ByteConfig.ntShowWS = !ByteConfig.ntShowWS;
-            button.displayString = "NT WS: " + (ByteConfig.ntShowWS ? "§aON" : "§cOFF");
+            button.displayString = "NT WS: " + toggle(ByteConfig.ntShowWS);
         } else if (button.id == 14) {
             ByteConfig.ntShowLevel = !ByteConfig.ntShowLevel;
-            button.displayString = "NT Level: " + (ByteConfig.ntShowLevel ? "§aON" : "§cOFF");
-        } else if (button.id == 18) {
-            ByteConfig.ntShowHealthBar = !ByteConfig.ntShowHealthBar;
-            button.displayString = "NT HP Bar: " + (ByteConfig.ntShowHealthBar ? "§aON" : "§cOFF");
+            button.displayString = "NT Level: " + toggle(ByteConfig.ntShowLevel);
         } else if (button.id == 15) {
             ByteConfig.scale += 0.1f;
             if (ByteConfig.scale > 1.55f) ByteConfig.scale = 0.1f;
             button.displayString = "Escala: " + (int)(ByteConfig.scale * 100) + "%";
         } else if (button.id == 16) {
             ByteConfig.showWins = !ByteConfig.showWins;
-            button.displayString = "Wins: " + (ByteConfig.showWins ? "§aON" : "§cOFF");
+            button.displayString = "Wins: " + toggle(ByteConfig.showWins);
         } else if (button.id == 17) {
             ByteConfig.showLosses = !ByteConfig.showLosses;
-            button.displayString = "Losses: " + (ByteConfig.showLosses ? "§aON" : "§cOFF");
+            button.displayString = "Losses: " + toggle(ByteConfig.showLosses);
+        } else if (button.id == 18) {
+            ByteConfig.ntShowHealthBar = !ByteConfig.ntShowHealthBar;
+            button.displayString = "NT HP Bar: " + toggle(ByteConfig.ntShowHealthBar);
         } else if (button.id == 19) {
             ByteConfig.showFps = !ByteConfig.showFps;
-            button.displayString = "FPS: " + (ByteConfig.showFps ? "§aON" : "§cOFF");
+            button.displayString = "FPS: " + toggle(ByteConfig.showFps);
         } else if (button.id == 20) {
             ByteConfig.showPing = !ByteConfig.showPing;
-            button.displayString = "Ping: " + (ByteConfig.showPing ? "§aON" : "§cOFF");
+            button.displayString = "Ping: " + toggle(ByteConfig.showPing);
         } else if (button.id == 101) {
             addSniper();
         } else if (button.id >= 2000) {
@@ -163,36 +184,27 @@ public class ByteGui extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
-        this.sniperInput.textboxKeyTyped(typedChar, keyCode);
+        sniperInput.textboxKeyTyped(typedChar, keyCode);
         if (keyCode == 28) addSniper();
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        this.sniperInput.mouseClicked(mouseX, mouseY, mouseButton);
+        sniperInput.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
     public void updateScreen() {
         super.updateScreen();
-        this.sniperInput.updateCursorCounter();
+        sniperInput.updateCursorCounter();
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        this.drawDefaultBackground();
+        drawDefaultBackground();
         super.drawScreen(mouseX, mouseY, partialTicks);
-        
-        int centerX = this.width / 2;
-        this.drawCenteredString(this.fontRendererObj, "§b§lByte Overlay - Configurações", centerX, 5, 16777215);
-        
-        this.drawCenteredString(this.fontRendererObj, "§7§nOverlay Stats", centerX, 25, 16777215);
-        this.drawCenteredString(this.fontRendererObj, "§7§nNametags", centerX, 137, 16777215);
-        this.drawCenteredString(this.fontRendererObj, "§7§nVisuals & Position", centerX, 244, 16777215);
-        this.drawCenteredString(this.fontRendererObj, "§c§nSnipers", centerX, 334, 16777215);
-        
-        this.sniperInput.drawTextBox();
+        sniperInput.drawTextBox();
     }
 
     @Override
