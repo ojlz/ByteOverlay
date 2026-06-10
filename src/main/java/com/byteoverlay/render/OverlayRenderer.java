@@ -21,6 +21,7 @@ public class OverlayRenderer {
     
     private List<PlayerData> lastPlayers = new ArrayList<>();
     private PlayerData lastMyData = null;
+    private Object lastWorld = null;
 
     public OverlayRenderer(CacheManager cacheManager, PlayerAnalyzer analyzer) {
         this.cacheManager = cacheManager;
@@ -31,6 +32,11 @@ public class OverlayRenderer {
     public void onRender(RenderGameOverlayEvent.Post event) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
         if (mc.theWorld == null || mc.thePlayer == null) return;
+
+        if (mc.theWorld != lastWorld) {
+            lastWorld = mc.theWorld;
+            analyzer.onWorldChange();
+        }
 
         updatePlayerData();
         

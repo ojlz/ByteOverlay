@@ -9,15 +9,22 @@ import net.minecraft.util.ChatComponentText;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class PlayerAnalyzer {
     private final ApiClient apiClient = new ApiClient();
     private final CacheManager cacheManager;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final AtomicLong worldToken = new AtomicLong(0);
     private long cooldownUntil = 0;
 
     public PlayerAnalyzer(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
+    }
+
+    public void onWorldChange() {
+        worldToken.incrementAndGet();
+        cacheManager.clear();
     }
 
     public void analyze(String nick) {
@@ -25,26 +32,30 @@ public class PlayerAnalyzer {
 
         PlayerData data = new PlayerData(nick);
         cacheManager.put(nick, data);
-        
         SniperListFeature.checkSniper(data);
 
+        long token = worldToken.get();
+
         executor.execute(() -> {
+            if (token != worldToken.get()) return;
+
             try {
                 while (System.currentTimeMillis() < cooldownUntil) {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
+                    if (token != worldToken.get()) return;
                 }
-                Thread.sleep(250);
-                
+
                 MushResponse response = apiClient.fetchPlayer(nick);
+                if (token != worldToken.get()) return;
+
                 processResponse(data, response);
             } catch (Exception e) {
                 data.setFetching(false);
                 if (e.getMessage() != null && e.getMessage().contains("429")) {
                     cooldownUntil = System.currentTimeMillis() + 8000;
-                    sendMessage("§cRate Limit atingindo! Pausando por 8s...");
+                    sendMessage("§cRate Limit atingido! Pausando por 8s...");
                 } else {
                     System.err.println("[ByteOverlay] Erro ao buscar dados de " + nick + ": " + e.getMessage());
-                    e.printStackTrace();
                 }
             }
         });
@@ -69,7 +80,6 @@ public class PlayerAnalyzer {
                 }
 
                 if (resp.banned && resp.banBlacklistCount > 0) {
-
                     data.setStaff(true);
                     sendMessage("§5§l⚠ STAFF DETECTADO ⚠ §r§f" + data.getNick());
                     playAlertSound(true);
@@ -94,12 +104,11 @@ public class PlayerAnalyzer {
                     data.setLosses((int)losses);
                     data.setWinstreak(bw.winstreak != null ? bw.winstreak.intValue() : 0);
                     data.setLevel(bw.level != null ? bw.level.intValue() : 0);
-                    
+
                     if (bw.levelBadge != null && bw.levelBadge.format != null) {
                         data.setLevelBadge(bw.levelBadge.format.replace("&", "§"));
                     }
 
-                    // Auto Sniper detection (Feature 5)
                     AutoSniperFeature.checkAutoSniper(data, bw);
                 }
             }
@@ -112,24 +121,15 @@ public class PlayerAnalyzer {
     private String getMinecraftColorFromHex(String hex) {
         if (hex == null || hex.isEmpty()) return "§7";
         hex = hex.toLowerCase().replace("#", "");
-        
         switch (hex) {
-            case "000000": return "§0";
-            case "0000aa": return "§1";
-            case "00aa00": return "§2";
-            case "00aaaa": return "§3";
-            case "aa0000": return "§4";
-            case "aa00aa": return "§5";
-            case "ffaa00": return "§6";
-            case "aaaaaa": return "§7";
-            case "555555": return "§8";
-            case "5555ff": return "§9";
-            case "55ff55": return "§a";
-            case "55ffff": return "§b";
-            case "ff5555": return "§c";
-            case "ff55ff": return "§d";
-            case "ffff55": return "§e";
-            case "ffffff": return "§f";
+            case "000000": return "§0"; case "0000aa": return "§1";
+            case "00aa00": return "§2"; case "00aaaa": return "§3";
+            case "aa0000": return "§4"; case "aa00aa": return "§5";
+            case "ffaa00": return "§6"; case "aaaaaa": return "§7";
+            case "555555": return "§8"; case "5555ff": return "§9";
+            case "55ff55": return "§a"; case "55ffff": return "§b";
+            case "ff5555": return "§c"; case "ff55ff": return "§d";
+            case "ffff55": return "§e"; case "ffffff": return "§f";
             default: return "§7";
         }
     }
